@@ -31,7 +31,7 @@
 
 ; Modifiable constants
 %define GRID_SQUARE_SIDE_LENGTH 10 ; # pixels
-%define GRID_SQUARE_SIDE_COUNT  50 ; # squares
+%define GRID_SQUARE_SIDE_COUNT  64 ; # squares (Must be a power of two) (In order to make generating random apple positions simpler.
 %define FRAME_TIME              75 ; the delta-time in ms between each frame/update.
 
 ; Auto-Gnerated Constants
@@ -99,11 +99,23 @@
 ; Changes The Apple's Position
 ; C-style syntax: void _apple_new_position(void)
 _apple_new_position: ;TODO: Random Position
-    MOV  EAX, DWORD[APPLE]
-    MOV  EDX, DWORD[APPLE+4]
+    MOV ECX, GRID_SQUARE_SIDE_LENGTH  ; Used in the MUL instructions later
 
-    MOV  DWORD[APPLE],   EDX
+    ; Generate Random X Position
+    RDRAND EAX                        ; EAX=Random 32 bit value
+    AND EAX, GRID_SQUARE_SIDE_COUNT-1 ; EAX=Random Grid Square Index because GRID_SQUARE_SIDE_COUNT is a power of 2
+    MUL ECX                           ; Multiply by grid square side length to get X position
+
+    MOV  DWORD[APPLE],   EAX
+
+    ; Generate Random Y Position
+    RDRAND EAX
+    AND EAX, 63
+    AND EAX, GRID_SQUARE_SIDE_COUNT-1
+    MUL ECX
+
     MOV  DWORD[APPLE+4], EAX
+
     RET
 
 ; <<< End of function _apple_new_position >>>
@@ -618,6 +630,7 @@ APPLE           dd GRID_SQUARE_SIDE_LENGTH*10, GRID_SQUARE_SIDE_LENGTH*20 ; Appl
 
 ; Custom Icon Image Data
 ; Reference on the meaning of these custom values https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createicon.
+; I had to write a Python script to generate these values from an iamge I created.
 ICON_AND_BIT_MASK db 252,0,252,0,252,127,252,127,252,127,252,127,252,127,252,127,252,127,252,127,252,127,252,127,252,127,0,127,0,127,0,127
 ICON_XOR_BIT_MASK dq 0,0,0,0
 
