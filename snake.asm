@@ -419,18 +419,20 @@ _window_proc_paint_draw_apple:
     MOV  RCX, APPLE_BRUSH_COLOR
     CALL CreateSolidBrush
 
-    ; Create Apple Struct: TODO:: OPTIMIZE GETTING FULL QWORD FROM APPLE (X;Y)
-    MOV R12D,          DWORD[APPLE]   ; APPLE.X
-    MOV DWORD[rsp+SHADOW_SPACE_SIZE], R12D           ; RECT.Left
+    MOV R12, QWORD[APPLE]
+    MOV QWORD[rsp+SHADOW_SPACE_SIZE], R12
+
+    MOV R12D,          DWORD[APPLE]         ; APPLE.X
+    MOV DWORD[rsp+SHADOW_SPACE_SIZE], R12D  ; RECT.Left
     
-    MOV R13D,          DWORD[APPLE+4] ; APPLE.Y
-    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4], R13D           ; RECT.Top
+    MOV R13D,          DWORD[APPLE+4]         ; APPLE.Y
+    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4], R13D  ; RECT.Top
 
     ADD R12D,          GRID_SQUARE_SIDE_LENGTH
-    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4+4], R12D           ; Rect.Right
+    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4+4], R12D  ; Rect.Right
     
     ADD R13D,          GRID_SQUARE_SIDE_LENGTH
-    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4+4+4], R13D           ; Rect.Bottom
+    MOV DWORD[rsp+SHADOW_SPACE_SIZE+4+4+4], R13D  ; Rect.Bottom
 
     ; Draw Apple
     MOV  RCX, RBX      ; hdc
